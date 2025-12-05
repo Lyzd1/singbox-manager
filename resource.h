@@ -11,4 +11,10 @@
 #define IDC_EDIT_URL    1005
 #define IDC_STATUS      1006
 
+#define IDM_TOGGLE      2001
+#define IDM_RESTART     2002
+#define IDM_UPDATE      2003
+#define IDM_SHOW        2004
+#define IDM_EXIT        2005
+
 #endif
