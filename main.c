@@ -18,6 +18,8 @@ static wchar_t g_exeDir[MAX_PATH] = {0};
 #define BAK_DIR L"bak"
 #define WM_TRAYICON (WM_USER + 1)
 
+static BOOL g_startMinimized = FALSE;
+
 void UpdateStatus(const wchar_t* status) {
     SetDlgItemTextW(g_hDlg, IDC_STATUS, status);
 }
@@ -156,9 +158,10 @@ void SetAutoStart(BOOL enable) {
     HKEY hKey;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_WRITE, &hKey) == ERROR_SUCCESS) {
         if (enable) {
-            wchar_t path[MAX_PATH];
+            wchar_t path[MAX_PATH], cmd[MAX_PATH + 20];
             GetModuleFileNameW(NULL, path, MAX_PATH);
-            RegSetValueExW(hKey, APP_NAME, 0, REG_SZ, (BYTE*)path, (wcslen(path) + 1) * sizeof(wchar_t));
+            swprintf(cmd, MAX_PATH + 20, L"\"%s\" -minimized", path);
+            RegSetValueExW(hKey, APP_NAME, 0, REG_SZ, (BYTE*)cmd, (wcslen(cmd) + 1) * sizeof(wchar_t));
         } else {
             RegDeleteValueW(hKey, APP_NAME);
         }
@@ -210,6 +213,10 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
         CheckDlgButton(hDlg, IDC_CHK_AUTO, IsAutoStartEnabled() ? BST_CHECKED : BST_UNCHECKED);
         LoadUrl();
         ShowTrayIcon(hDlg);
+        if (g_startMinimized) {
+            HideToTray(hDlg);
+            StartSingbox();
+        }
         return TRUE;
 
     case WM_TRAYICON:
@@ -262,7 +269,11 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
-    (void)hPrevInstance; (void)lpCmdLine; (void)nCmdShow;
+    (void)hPrevInstance; (void)nCmdShow;
+
+    // 检查命令行参数
+    if (lpCmdLine && wcsstr(lpCmdLine, L"-minimized"))
+        g_startMinimized = TRUE;
 
     // 设置工作目录为exe所在目录
     GetModuleFileNameW(NULL, g_exeDir, MAX_PATH);
