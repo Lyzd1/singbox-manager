@@ -1,11 +1,9 @@
 #include <windows.h>
 #include <wininet.h>
 #include <stdio.h>
-#include <shlwapi.h>
 #include "resource.h"
 
 #pragma comment(lib, "wininet.lib")
-#pragma comment(lib, "shlwapi.lib")
 
 static HWND g_hDlg = NULL;
 static HANDLE g_hProcess = NULL;
@@ -117,7 +115,7 @@ BOOL DownloadFile(const wchar_t* url, const wchar_t* filename) {
 }
 
 void BackupConfig(void) {
-    if (PathFileExistsW(CONFIG_FILE)) {
+    if (GetFileAttributesW(CONFIG_FILE) != INVALID_FILE_ATTRIBUTES) {
         CreateDirectoryW(BAK_DIR, NULL);
         CopyFileW(CONFIG_FILE, BAK_DIR L"\\config.json", FALSE);
     }
@@ -268,7 +266,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
     // 设置工作目录为exe所在目录
     GetModuleFileNameW(NULL, g_exeDir, MAX_PATH);
-    PathRemoveFileSpecW(g_exeDir);
+    wchar_t* lastSlash = wcsrchr(g_exeDir, L'\\');
+    if (lastSlash) *lastSlash = L'\0';
     SetCurrentDirectoryW(g_exeDir);
 
     DialogBoxW(hInstance, MAKEINTRESOURCEW(IDD_MAIN), NULL, DlgProc);
