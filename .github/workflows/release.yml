@@ -15,8 +15,7 @@ jobs:
       - name: Build
         run: |
           windres resource.rc -o resource.o
-          gcc -c main.c -o main.o -DUNICODE -D_UNICODE
-          gcc main.o resource.o -o SingboxManager.exe -lwininet -mwindows -static
+          gcc -municode -mwindows -static main.c resource.o -o SingboxManager.exe -lwininet
 
       - name: Create Release Archive
         run: |
