@@ -14,7 +14,7 @@ jobs:
 
       - name: Build
         run: |
-          windres resource.rc -o resource.o
+          windres -c 65001 resource.rc -o resource.o
           gcc -municode -mwindows -static main.c resource.o -o SingboxManager.exe -lwininet
 
       - name: Create Release Archive
