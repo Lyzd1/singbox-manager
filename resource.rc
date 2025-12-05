@@ -1,0 +1,21 @@
+#include "resource.h"
+#include <windows.h>
+
+IDI_ICON ICON "icon.ico"
+
+IDD_MAIN DIALOGEX 0, 0, 280, 120
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+CAPTION "Singbox Manager"
+FONT 9, "Segoe UI"
+BEGIN
+    LTEXT           "订阅链接:", -1, 10, 12, 40, 10
+    EDITTEXT        IDC_EDIT_URL, 55, 10, 215, 14, ES_AUTOHSCROLL
+
+    PUSHBUTTON      "启动", IDC_BTN_TOGGLE, 10, 35, 80, 25
+    PUSHBUTTON      "重启", IDC_BTN_RESTART, 100, 35, 80, 25
+    PUSHBUTTON      "更新订阅", IDC_BTN_UPDATE, 190, 35, 80, 25
+
+    AUTOCHECKBOX    "开机自启动", IDC_CHK_AUTO, 10, 75, 80, 10
+
+    LTEXT           "状态: 已停止", IDC_STATUS, 10, 100, 260, 10
+END
